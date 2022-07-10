@@ -10,12 +10,9 @@ from lib.utils import (
   ToggleButtonFill
   )
 
-from IPython.display import display, clear_output
+from IPython.display import display
 from ipywidgets import Label,GridspecLayout,Output, HBox, Layout, VBox
 import shutil
-import os
-import itertools
-
 
 class labeling_display():
 
