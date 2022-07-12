@@ -16,11 +16,6 @@ import shutil
 
 class labeling_display():
 
-  # output_init = Output(layout={'border': '1px solid transparent'})
-  # output_controls = Output(layout={'border': '1px solid transparent'})
-  # output_images = Output(layout={'border': '1px solid transparent'})
-  # output_progress = Output(layout={'border': '1px solid transparent'})
-
   def __init__(self, to_label, primary_labels, secondary_labels, output_path):
     self.output_path = output_path
     self.to_label = to_label
@@ -75,7 +70,7 @@ class labeling_display():
   
     self.current_img = self.getImgOptions(self.to_label[self.index])
     with self.output_images:
-
+        
       display(HBoxAlign([self.current_img], justify='center'), clear=True)
 
   def add_image_pair(self):
