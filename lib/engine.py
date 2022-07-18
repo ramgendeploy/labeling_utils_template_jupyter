@@ -9,17 +9,12 @@ from lib.utils import (
   ToggleButtonsCenter,
   ToggleButtonFill
   )
-
+import os
 from IPython.display import display
 from ipywidgets import Label,GridspecLayout,Output, HBox, Layout, VBox
 import shutil
 
 class labeling_display():
-
-  # output_init = Output(layout={'border': '1px solid transparent'})
-  # output_controls = Output(layout={'border': '1px solid transparent'})
-  # output_images = Output(layout={'border': '1px solid transparent'})
-  # output_progress = Output(layout={'border': '1px solid transparent'})
 
   def __init__(self, to_label, primary_labels, secondary_labels, output_path):
     self.output_path = output_path
@@ -30,23 +25,18 @@ class labeling_display():
     self.index = -1
     self.current_img = None
     
-    self.progress_label = HBoxAlign([Label()])
-
-    self.progress_label = HBoxAlign([Label(f'{self.index}/{len(self.to_label)-1}')])
-    self.image_label = HBoxAlign([Label('Image Name')])
-
+    self.progress_label = HBoxAlign([Label(f'{self.index}/{len(self.to_label)-1}')], justify='center')
+    self.image_label = HBoxAlign([Label('Image Name')], justify='center')
     self.controls = GridspecLayout(2, 6)
     
-    nextBtn = ButtonCenter('Next','info','fa-arrow-right',onClick=lambda _: self.next_set(1))    
+    nextBtn = ButtonCenter('Next','info','fa-arrow-right', onClick=lambda _: self.next_set(1))    
     addBtn =  ButtonCenter('Add','primary','fa-check-circle','#2CC77F', onClick=lambda _: self.add_image_pair())
     discardBtn = ButtonCenter('Discard','warning','fa-trash', onClick=lambda _: self.discard_image_pair())    
     backBtn = ButtonCenter('Back','info','fa-arrow-left', onClick=lambda _: self.next_set(-1))
-    progress_info = HBoxAlign([self.progress_label])
-    img_name_info = HBoxAlign([self.image_label])
 
     self.controls[0, 0] = discardBtn
-    self.controls[0, 1] = progress_info
-    self.controls[0, 2] = img_name_info
+    self.controls[0, 1] = self.progress_label
+    self.controls[0, 2] = self.image_label
     self.controls[0, 3] = addBtn
     self.controls[0, 4] = backBtn
     self.controls[0, 5] = nextBtn    
@@ -70,12 +60,12 @@ class labeling_display():
         display(HBox(children=[Label('Finished this image batch.',)],
                 layout=Layout(height='auto', width='auto', justify_content='center')))
       return      
+
     self.progress_label.children[0].value=f'{self.index}/{len(self.to_label)-1}'
     self.image_label.children[0].value=self.to_label[self.index]
   
     self.current_img = self.getImgOptions(self.to_label[self.index])
     with self.output_images:
-
       display(HBoxAlign([self.current_img], justify='center'), clear=True)
 
   def add_image_pair(self):
@@ -87,16 +77,16 @@ class labeling_display():
     slabel = self.secondary_labels[slabel[0]]
 
     shutil.copy(fpath,
-      f"{self.output_path}/{flabel}/{slabel}/{fpath.split('/')[-1]}")  
+      f"{self.output_path}/{flabel}/{slabel}/{os.path.basename(fpath)}")  
     
     with self.output_progress:
-      print(f"copied {fpath} to \n{self.output_path}/{flabel}/{slabel}/{fpath.split('/')[-1]}")
+      print(f"copied {fpath} to \n{self.output_path}/{flabel}/{slabel}/{os.path.basename(fpath)}")
 
     self.next_set(1)
 
   def discard_image_pair(self):
     fpath=self.to_label[self.index]
-    shutil.copy(fpath, f"{self.output_path}/Discard/{fpath.split('/')[-1]}")    
+    shutil.copy(fpath, f"{self.output_path}/Discard/{os.path.basename(fpath)}")    
     with self.output_progress:
       print(f"Discarted {fpath}")
     self.next_set(1)
